@@ -2,6 +2,7 @@ package gui;
 
 import javax.swing.JButton;
 
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -9,6 +10,7 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
 
 import businessLogic.BLFacade;
 import domain.User;
@@ -47,7 +49,7 @@ public class BaloraGUI extends JFrame {
 
 		lbltxt = new JLabel(ResourceBundle.getBundle("Etiquetas").getString("BaloraGUI.Izena") + ": " + username);
 
-		slider = new JSlider(JSlider.HORIZONTAL, 1, 5, 1);
+		slider = new JSlider(SwingConstants.HORIZONTAL , 1, 5, 1);
 		slider.setForeground(new Color(100, 100, 100));
 		slider.setMinorTickSpacing(1);
 		slider.setMajorTickSpacing(1);
@@ -68,7 +70,7 @@ public class BaloraGUI extends JFrame {
 				us.setBalkop(kop + 1);
 				appFacadeInterface.updateUser(us);
 
-				jButtonClose_actionPerformed(e);
+				jButtonCloseActionPerformed(e);
 			}
 		});
 		baloratu.setBounds(new Rectangle(100, 263, 130, 30));
@@ -84,7 +86,7 @@ public class BaloraGUI extends JFrame {
 
 	}
 
-	private void jButtonClose_actionPerformed(ActionEvent e) {
+	private void jButtonCloseActionPerformed(ActionEvent e) {
 		this.setVisible(false);
 	}
 }

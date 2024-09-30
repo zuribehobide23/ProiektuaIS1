@@ -23,7 +23,7 @@ public class AdminGUI extends JFrame {
 	private JButton jButtonEzabatu = null;
 	private JButton jButtonItxi = null;
 	private JLabel jLabelSelectOption;
-	private static final String etiketa = "Etiquetas";
+	private static final String ETIKETA = "Etiquetas";
 
 	private static BLFacade appFacadeInterface;
 
@@ -38,10 +38,10 @@ public class AdminGUI extends JFrame {
 	public AdminGUI(String username) {
 		AdminGUI.setBussinessLogic(LoginGUI.getBusinessLogic());
 
-		this.setTitle(ResourceBundle.getBundle(etiketa).getString("AdminGUI.Admin"));
+		this.setTitle(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Admin"));
 		this.setSize(495, 290);
 
-		jLabelSelectOption = new JLabel(ResourceBundle.getBundle(etiketa).getString("AdminGUI.Admin"));
+		jLabelSelectOption = new JLabel(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Admin"));
 		jLabelSelectOption.setFont(new Font("Tahoma", Font.BOLD, 13));
 		jLabelSelectOption.setForeground(Color.BLACK);
 		jLabelSelectOption.setHorizontalAlignment(SwingConstants.CENTER);
@@ -53,7 +53,7 @@ public class AdminGUI extends JFrame {
 				a.setVisible(true);
 			}
 		});
-		jButtonDeskontu.setText(ResourceBundle.getBundle(etiketa).getString("AdminGUI.Deskontua"));
+		jButtonDeskontu.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Deskontua"));
 
 		jButtonkude = new JButton();
 		jButtonkude.addActionListener(new ActionListener() {
@@ -62,10 +62,10 @@ public class AdminGUI extends JFrame {
 				a.setVisible(true);
 			}
 		});
-		jButtonkude.setText(ResourceBundle.getBundle(etiketa).getString("AdminGUI.Kudea"));
+		jButtonkude.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Kudea"));
 
 		jButtonEzabatu = new JButton();
-		jButtonEzabatu.setText(ResourceBundle.getBundle(etiketa).getString("AdminGUI.Ezab"));
+		jButtonEzabatu.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Ezab"));
 		jButtonEzabatu.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				JFrame a = new EzabatuGUI();
@@ -79,7 +79,7 @@ public class AdminGUI extends JFrame {
 				jButtonClose_actionPerformed(e);
 			}
 		});
-		jButtonItxi.setText(ResourceBundle.getBundle(etiketa).getString("EgoeraGUI.Close"));
+		jButtonItxi.setText(ResourceBundle.getBundle(ETIKETA).getString("EgoeraGUI.Close"));
 
 		jContentPane = new JPanel();
 		jContentPane.setLayout(new GridLayout(6, 1, 0, 0));

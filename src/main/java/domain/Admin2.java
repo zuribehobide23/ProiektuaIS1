@@ -1,6 +1,8 @@
 package domain;
 
 import java.io.Serializable;
+import java.util.Objects;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -44,6 +46,11 @@ public class Admin2 implements Serializable {
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(mota, passwd, username);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -52,11 +59,10 @@ public class Admin2 implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Admin2 other = (Admin2) obj;
-		if (username != other.username)
-			return false;
-		return true;
+		return Objects.equals(mota, other.mota) && Objects.equals(passwd, other.passwd)
+				&& Objects.equals(username, other.username);
 	}
-
+	
 	public String getMota() {
 		return mota;
 	}
