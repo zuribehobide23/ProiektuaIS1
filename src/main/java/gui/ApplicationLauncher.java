@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.util.logging.Logger;
 import java.util.Locale;
 
 import javax.swing.UIManager;
@@ -13,12 +14,13 @@ import businessLogic.BLFacade;
 import businessLogic.BLFacadeImplementation;
 
 public class ApplicationLauncher {
+	private static final Logger logger = Logger.getLogger(ApplicationLauncher.class.getName());
 
 	public static void main(String[] args) {
 
 		ConfigXML c = ConfigXML.getInstance();
 
-		System.out.println(c.getLocale());
+		logger.info("Locale: " + c.getLocale().toString());
 
 		Locale.setDefault(new Locale(c.getLocale()));
 

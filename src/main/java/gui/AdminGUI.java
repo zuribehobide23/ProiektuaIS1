@@ -47,12 +47,11 @@ public class AdminGUI extends JFrame {
 		jLabelSelectOption.setHorizontalAlignment(SwingConstants.CENTER);
 
 		jButtonDeskontu = new JButton();
-		jButtonDeskontu.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFrame a = new DeskontuaGUI(username);
-				a.setVisible(true);
-			}
+		jButtonDeskontu.addActionListener(e -> {
+		    JFrame a = new DeskontuaGUI(username);
+		    a.setVisible(true);
 		});
+
 		jButtonDeskontu.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Deskontua"));
 
 		jButtonkude = new JButton();

@@ -47,7 +47,7 @@ public class Admin2 implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(mota, passwd, username);
+		return Objects.hash(username);
 	}
 
 	@Override
@@ -59,8 +59,9 @@ public class Admin2 implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Admin2 other = (Admin2) obj;
-		return Objects.equals(mota, other.mota) && Objects.equals(passwd, other.passwd)
-				&& Objects.equals(username, other.username);
+		if (username != other.username)
+			return false;
+		return true;
 	}
 	
 	public String getMota() {
