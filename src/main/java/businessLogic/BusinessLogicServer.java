@@ -75,7 +75,6 @@ public class BusinessLogicServer extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						textArea.append("\n\n\nClosing the server... ");
 					    
-							//server.close();
 						
 						System.exit(1);
 					}
@@ -84,11 +83,11 @@ public class BusinessLogicServer extends JDialog {
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
-			{
+			
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.setActionCommand("Cancel");
 				buttonPane.add(cancelButton);
-			}
+			
 		}
 		
 		ConfigXML c=ConfigXML.getInstance();

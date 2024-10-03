@@ -21,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
 public class BookGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox<String> jComboBoxOrigin = new JComboBox<String>();
+	private JComboBox<String> jComboBoxOrigin = new JComboBox<>();
 	DefaultComboBoxModel<String> originLocations = new DefaultComboBoxModel<String>();
 
 	private JComboBox<String> jComboBoxDestination = new JComboBox<String>();
@@ -63,7 +63,7 @@ public class BookGUI extends JFrame {
 
 	private final JLabel lblEserlekuak = new JLabel(
 			ResourceBundle.getBundle("Etiquetas").getString("FindRidesGUI.NPlaces"));
-	private JComboBox<Integer> comboBoxSeats = new JComboBox<Integer>();
+	private JComboBox<Integer> comboBoxSeats = new JComboBox<>();
 	private final JLabel jLabelSaldoa = new JLabel();
 
 	double desk = 0;
@@ -98,7 +98,7 @@ public class BookGUI extends JFrame {
 
 		jButtonClose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jButton2_actionPerformed(e);
+				jButton2actionPerformed(e);
 			}
 		});
 
@@ -460,7 +460,7 @@ public class BookGUI extends JFrame {
 
 	}
 
-	private void jButton2_actionPerformed(ActionEvent e) {
+	private void jButton2actionPerformed(ActionEvent e) {
 		this.setVisible(false);
 	}
 

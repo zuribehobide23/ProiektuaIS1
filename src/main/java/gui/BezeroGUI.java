@@ -21,7 +21,6 @@ import javax.swing.table.DefaultTableModel;
 import businessLogic.BLFacade;
 import domain.Booking;
 import domain.Complaint;
-import domain.Driver;
 import domain.Traveler;
 
 public class BezeroGUI extends JFrame {
