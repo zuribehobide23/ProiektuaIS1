@@ -20,7 +20,7 @@ public class ApplicationLauncher {
 
 		ConfigXML c = ConfigXML.getInstance();
 
-		logger.info("Locale: " + c.getLocale().toString());
+		logger.info("Locale: " + c.getLocale());
 
 		Locale.setDefault(new Locale(c.getLocale()));
 

@@ -18,6 +18,7 @@ public class AlertaAurkituakGUI extends JFrame {
 	private static BLFacade appFacadeInterface;
 	private JTable table;
 	private JButton closeButton;
+	private static final String ETIKETA= "Etiquetas";
 
 	public static void setBussinessLogic(BLFacade afi) {
 		appFacadeInterface = afi;
@@ -26,19 +27,19 @@ public class AlertaAurkituakGUI extends JFrame {
 	public AlertaAurkituakGUI(String username) {
 		
 		setBussinessLogic(TravelerGUI.getBusinessLogic());
-		this.setTitle(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.Alert"));
+		this.setTitle(ResourceBundle.getBundle(ETIKETA).getString("AlertGUI.Alert"));
 		setSize(new Dimension(600, 400));
 		setResizable(false);
 		getContentPane().setLayout(new BorderLayout());
 
 		List<Alert> alertList = appFacadeInterface.getAlertsByUsername(username);
 		DefaultTableModel model = new DefaultTableModel(
-				new Object[] { ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.Zenbakia"),
-						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.LeavingFrom"),
-						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.GoingTo"),
-						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.RideDate"),
-						ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.Aurkitua"),
-						ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.Aktibo") },
+				new Object[] { ResourceBundle.getBundle(ETIKETA).getString("AlertGUI.Zenbakia"),
+						ResourceBundle.getBundle(ETIKETA).getString("CreateRideGUI.LeavingFrom"),
+						ResourceBundle.getBundle(ETIKETA).getString("CreateRideGUI.GoingTo"),
+						ResourceBundle.getBundle(ETIKETA).getString("CreateRideGUI.RideDate"),
+						ResourceBundle.getBundle(ETIKETA).getString("AlertGUI.Aurkitua"),
+						ResourceBundle.getBundle(ETIKETA).getString("AlertGUI.Aktibo") },
 				0);
 		table = new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(table);

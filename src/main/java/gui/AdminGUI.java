@@ -55,11 +55,10 @@ public class AdminGUI extends JFrame {
 		jButtonDeskontu.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Deskontua"));
 
 		jButtonkude = new JButton();
-		jButtonkude.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		jButtonkude.addActionListener(e->{
 				JFrame a = new DeskontuKudeatuGUI(username);
 				a.setVisible(true);
-			}
+			
 		});
 		jButtonkude.setText(ResourceBundle.getBundle(ETIKETA).getString("AdminGUI.Kudea"));
 
@@ -75,7 +74,7 @@ public class AdminGUI extends JFrame {
 		jButtonItxi = new JButton();
 		jButtonItxi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jButtonClose_actionPerformed(e);
+				jButtonCloseactionPerformed();
 			}
 		});
 		jButtonItxi.setText(ResourceBundle.getBundle(ETIKETA).getString("EgoeraGUI.Close"));
@@ -92,7 +91,7 @@ public class AdminGUI extends JFrame {
 
 	}
 
-	private void jButtonClose_actionPerformed(ActionEvent e) {
+	private void jButtonCloseactionPerformed() {
 		this.setVisible(false);
 	}
 
