@@ -519,6 +519,8 @@ public class DataAccess {
 	}
 
 	public boolean bookRide(String username, Ride ride, int seats, double desk) {
+		System.out.println(
+				">> DataAccess: bookRide=> username= " + username + " ride= " + ride + " seats=" + seats + " desk " + desk);
 		try {
 			db.getTransaction().begin();
 
