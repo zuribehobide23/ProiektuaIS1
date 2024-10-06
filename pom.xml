@@ -32,7 +32,7 @@
 		<sonar.organization>zuribehobide</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.projectKey>zuribehobide_proiektuarides</sonar.projectKey>
-		<sonar.login>6f5b5250e31aecad7f9df7fb469442783a2c2940</sonar.login>
+		<sonar.login>6973dff1f94c87f193b9a01c6253bb9eb11ef221</sonar.login>
 	</properties>
 
 	<!-- https://mvnrepository.com/artifact/junit/junit -->
