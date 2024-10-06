@@ -1,4 +1,5 @@
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -167,6 +168,8 @@ public class BookRideMockBlackTest {
 			sut.open();
 			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			assertFalse(b);
+			
+			assertNull(ride);
 			
 			sut.close();
 		} catch (NullPointerException e) {

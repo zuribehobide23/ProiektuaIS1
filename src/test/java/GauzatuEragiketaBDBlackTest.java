@@ -112,7 +112,11 @@ public class GauzatuEragiketaBDBlackTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			} 
 	}
 	
 	
@@ -143,7 +147,11 @@ public class GauzatuEragiketaBDBlackTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			} 
 	}
 	
 	@Test
@@ -174,7 +182,11 @@ public class GauzatuEragiketaBDBlackTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			} 
 	}
 	
 	@Test
@@ -205,7 +217,11 @@ public class GauzatuEragiketaBDBlackTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			} 
 	}
 	
 	

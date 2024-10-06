@@ -89,7 +89,9 @@ public class GauzatuEragiketaBDWhiteTest {
 		try {
 			
 			testDA.open();
-			Driver a =testDA.createDriver("Luken", "123");
+			if (!testDA.existDriver("Luken")) {
+				Driver a =testDA.createDriver("Luken", "123");
+			}
 			testDA.close();
 			
 			//define parameters
@@ -108,7 +110,11 @@ public class GauzatuEragiketaBDWhiteTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			}
 	}
 	
 	@Test
@@ -138,7 +144,11 @@ public class GauzatuEragiketaBDWhiteTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			}
 	}
 	
 	@Test
@@ -168,12 +178,10 @@ public class GauzatuEragiketaBDWhiteTest {
 			} catch (Exception e) {
 			// TODO Auto-generated catch block
 			fail();
-		} 
+			} finally {
+				testDA.open();
+				testDA.removeDriver("Luken");
+				testDA.close();
+			}
 	}
-	
-	
-
-
-
-
 }

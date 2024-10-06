@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -180,6 +181,7 @@ public class BookRideBDBlackTest {
 			// verify the results
 			assertFalse(b);
 			sut.close();
+			assertNull(ride);
 
 		} catch (NullPointerException e) {
 			assertTrue(true);
