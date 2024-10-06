@@ -12,6 +12,7 @@ import configuration.ConfigXML;
 import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
+import domain.User;
 
 public class TestDataAccess {
 	protected EntityManager db;
@@ -46,6 +47,8 @@ public class TestDataAccess {
 		System.out.println("TestDataAccess opened");
 
 	}
+
+	
 
 	public void close() {
 		db.close();
@@ -187,4 +190,5 @@ public class TestDataAccess {
 			return false;
 		}
 	}
+
 }

@@ -340,7 +340,12 @@ public class DataAccess {
 	public User getUser(String erab) {
 		TypedQuery<User> query = db.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
 		query.setParameter("username", erab);
-		return query.getSingleResult();
+		List<User> resultList = query.getResultList();
+		if (resultList.isEmpty()) {
+			return null;
+		} else {
+			return resultList.get(0);
+		}
 	}
 
 	public double getActualMoney(String erab) {
