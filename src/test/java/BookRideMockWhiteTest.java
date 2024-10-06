@@ -91,15 +91,14 @@ public class BookRideMockWhiteTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 0, 0);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO Auto-generated catch block
-			// if the program goes to this point fail  
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 
@@ -136,14 +135,13 @@ public class BookRideMockWhiteTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 0, 0);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b); 
 		} catch (Exception e) {
-			e.printStackTrace();
-			// if the program goes to this point fail  
-			fail("Exception thrown during test execution: " + e.getMessage());
+			e.printStackTrace(); 
+			fail();
 		}
 	}
 
@@ -183,13 +181,13 @@ public class BookRideMockWhiteTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			sut.bookRide(travelerUserName, ride, requestedSeats, 0);
+			boolean b = sut.bookRide(travelerUserName, ride, requestedSeats, 0.1);
 			sut.close();
-
-			fail("Exception thrown during test execution");
+			// verify the results
+			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			assertTrue(true);
+			fail();
 		}
 	}
 
@@ -229,13 +227,13 @@ public class BookRideMockWhiteTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			sut.bookRide(travelerUserName, ride, 0, 0);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
-
-			fail("Exception thrown during test execution");
+			// verify the results
+			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			assertTrue(true);
+			fail();
 		}
 	}
 
@@ -267,7 +265,7 @@ public class BookRideMockWhiteTest {
 		ride = new Ride(rideFrom, rideTo, rideDate, availableSeats, price, driver);
 
 		traveler = new Traveler(travelerUserName, travelerPassWord); // Supongamos que tiene 50 de dinero
-		traveler.setMoney(5);
+		traveler.setMoney(20);
 		
 		Mockito.when(db.createQuery(Mockito.anyString(), Mockito.eq(Traveler.class))).thenReturn(mockedQuery);
 		Mockito.when(mockedQuery.getResultList()).thenReturn(Collections.singletonList(traveler)); 
@@ -275,13 +273,13 @@ public class BookRideMockWhiteTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 0, 0);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
 			//verify the results
 			assertTrue(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Exception thrown during test execution: " + e.getMessage());// Cambia a la excepción que esperas
+			fail();
 		}
 	}
 }

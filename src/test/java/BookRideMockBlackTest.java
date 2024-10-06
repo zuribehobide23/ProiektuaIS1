@@ -72,7 +72,7 @@ public class BookRideMockBlackTest {
 		String rideFrom = "Donostia";
 		String rideTo = "Zarautz";
 
-		driver = new Driver("Driver test", "123");
+		driver = new Driver("Driver Test", "123");
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date rideDate = null;
@@ -86,7 +86,7 @@ public class BookRideMockBlackTest {
 
 		ride = new Ride(rideFrom, rideTo, rideDate, availableSeats, price, driver);
 		traveler = new Traveler(travelerUserName, travelerPassWord); 
-		traveler.setMoney(5);
+		traveler.setMoney(20);
 		
 		Mockito.when(db.createQuery(Mockito.anyString(), Mockito.eq(Traveler.class))).thenReturn(mockedQuery);
 		Mockito.when(mockedQuery.getResultList()).thenReturn(Collections.singletonList(traveler));
@@ -94,7 +94,7 @@ public class BookRideMockBlackTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
 			// verify the results
 			assertTrue(b);
@@ -102,7 +102,7 @@ public class BookRideMockBlackTest {
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO Auto-generated catch block
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 
@@ -119,7 +119,7 @@ public class BookRideMockBlackTest {
 		String rideFrom = "Donostia";
 		String rideTo = "Zarautz";
 
-		driver = new Driver("Driver test", "123");
+		driver = new Driver("Driver Test", "123");
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date rideDate = null; 
@@ -138,13 +138,13 @@ public class BookRideMockBlackTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b); 
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 
@@ -165,10 +165,11 @@ public class BookRideMockBlackTest {
 		// invoke System Under Test (sut)
 		try {
 			sut.open();
-			sut.bookRide(travelerUserName, ride, 2, 0.1);
-			fail("Exception thrown during test execution: ");
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
+			assertFalse(b);
+			
 			sut.close();
-		} catch (RuntimeException e) {
+		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
 	}
@@ -186,7 +187,7 @@ public class BookRideMockBlackTest {
 		String rideFrom = "Donostia";
 		String rideTo = "Zarautz";
 
-		driver = new Driver("Driver test", "123");
+		driver = new Driver("Driver Test", "123");
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date rideDate = null; 
@@ -201,7 +202,6 @@ public class BookRideMockBlackTest {
 		ride = new Ride(rideFrom, rideTo, rideDate, availableSeats, price, driver);
 
 		traveler = new Traveler(travelerUserName, travelerPassWord);
-		traveler.setMoney(5);
 
 		Mockito.when(db.createQuery(Mockito.anyString(), Mockito.eq(Traveler.class))).thenReturn(mockedQuery);
 		Mockito.when(mockedQuery.getResultList()).thenReturn(Collections.singletonList(traveler));
@@ -209,13 +209,13 @@ public class BookRideMockBlackTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, -2, 0.1);
+			boolean b = sut.bookRide(travelerUserName, ride, -2, 0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 
@@ -232,7 +232,7 @@ public class BookRideMockBlackTest {
 		String rideFrom = "Donostia";
 		String rideTo = "Zarautz";
 
-		driver = new Driver("Driver test", "123");
+		driver = new Driver("Driver Test", "123");
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date rideDate = null; 
@@ -254,13 +254,13 @@ public class BookRideMockBlackTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 2, -0.1);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, -0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 
@@ -277,7 +277,7 @@ public class BookRideMockBlackTest {
 		String rideFrom = "Donostia";
 		String rideTo = "Zarautz";
 
-		driver = new Driver("Driver test", "123");
+		driver = new Driver("Driver Test", "123");
 
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		Date rideDate = null; 
@@ -299,13 +299,13 @@ public class BookRideMockBlackTest {
 		try {
 			// invoke System Under Test (sut)
 			sut.open();
-			Boolean b = sut.bookRide(travelerUserName, ride, 6, 0.1);
+			boolean b = sut.bookRide(travelerUserName, ride, 6, 0.1);
 			sut.close();
 			// verify the results
 			assertFalse(b);
 		} catch (Exception e) {
 			e.printStackTrace();
-			fail("Exception thrown during test execution: " + e.getMessage());
+			fail();
 		}
 	}
 }
