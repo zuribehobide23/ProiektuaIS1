@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,6 +12,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import dataAccess.DataAccess;
+import domain.Booking;
 import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
@@ -28,6 +30,7 @@ public class BookRideBDBlackTest {
 	// has enough money to make the ride.
 	public void test1() {
 		// define parameters
+		int requestedSeats = 2;
 		int availableSeats = 5;
 		double price = 10;
 
@@ -72,17 +75,29 @@ public class BookRideBDBlackTest {
 			assertNotNull(driver);
 			
 			testDA.open();
+			Booking bo = testDA.createBooking(ride, traveler, 2);
+			Traveler ondo = testDA.addTravelerWithBooking(travelerUserName, bo);
+			assertNotNull(bo);
+			assertNotNull(ondo);
+			testDA.close();
+			
+			testDA.open();
 			boolean a = testDA.bookingComplete(travelerUserName);
 			testDA.close();
 			assertTrue(a);
+
+			assertNotNull(driver);
+			assertNotNull(ride);
 			
 			// invoke System Under Test (sut)
 			sut.open();
-			sut.bookRide(travelerUserName, ride, 2, 0.1);
-			assertTrue(true);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
+			assertEquals(requestedSeats, 2);
+			assertNotNull(ride);
+			
+			assertTrue(b);
 			sut.close();
 			
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			// TODO Auto-generated catch block
@@ -90,10 +105,9 @@ public class BookRideBDBlackTest {
 		} finally {
 			// Remove the created objects in the database (cascade removing)
 			testDA.open();
-			testDA.removeTraveler(travelerUserName);
 			testDA.removeRide(driverUsername, rideFrom, rideTo, rideDate);
 			testDA.removeDriver(driverUsername);
-
+			testDA.removeTraveler(travelerUserName);
 			testDA.close();
 		}
 	}

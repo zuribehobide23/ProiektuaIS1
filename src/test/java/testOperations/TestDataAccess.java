@@ -9,6 +9,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import configuration.ConfigXML;
+import domain.Booking;
 import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
@@ -189,6 +190,41 @@ public class TestDataAccess {
 		} else {
 			return false;
 		}
+	}
+	
+	public Booking createBooking(Ride ride, Traveler traveler, int seats) {
+		System.out.println(">> TestDataAccess: addTraveler");
+		Booking booking = null;
+		db.getTransaction().begin();
+		try {
+			booking = new Booking(ride, traveler, seats);
+			db.persist(booking);
+			db.getTransaction().commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return booking;
+	}
+	
+	public Traveler addTravelerWithBooking(String name, Booking booking) {
+		System.out.println(">> TestDataAccess: addTravelerWithBooking");
+		Traveler traveler = null;
+		db.getTransaction().begin();
+		try {
+			traveler = db.find(Traveler.class, name);
+			if (traveler == null) {
+				System.out.println("Entra en null");
+				traveler = new Traveler(name, null);
+				db.persist(traveler);
+			}
+			traveler.addBookedRide(booking);
+			db.getTransaction().commit();
+			System.out.println("Traveler created " + traveler);
+			return traveler;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

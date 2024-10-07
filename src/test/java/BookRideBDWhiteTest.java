@@ -1,3 +1,4 @@
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -10,6 +11,7 @@ import java.util.Date;
 import org.junit.Test;
 
 import dataAccess.DataAccess;
+import domain.Booking;
 import domain.Driver;
 import domain.Ride;
 import domain.Traveler;
@@ -80,7 +82,7 @@ public class BookRideBDWhiteTest {
 		} finally {
 			// Remove the created objects in the database (cascade removing)
 			testDA.open();
-		
+
 			testDA.removeRide(driverUsername, rideFrom, rideTo, rideDate);
 			if (driverCreated) {
 				testDA.removeDriver(driverUsername);
@@ -145,7 +147,7 @@ public class BookRideBDWhiteTest {
 		} finally {
 			// Remove the created objects in the database (cascade removing)
 			testDA.open();
-		
+
 			testDA.removeRide(driverUsername, rideFrom, rideTo, rideDate);
 			if (driverCreated) {
 				testDA.removeDriver(driverUsername);
@@ -300,13 +302,12 @@ public class BookRideBDWhiteTest {
 	// has enough money to make the ride.
 	public void test5() {
 		// define parameters
+		int requestedSeats = 2;
 		int availableSeats = 5;
 		double price = 10;
 
 		String driverUsername = "Driver Test";
 		String driverPassword = "123";
-
-		boolean travelerCreated = false;
 
 		String travelerUserName = "Traveler Test";
 		String travelerPassWord = "123";
@@ -342,9 +343,18 @@ public class BookRideBDWhiteTest {
 			testDA.open();
 			Traveler traveler = testDA.createTraveler(travelerUserName, travelerPassWord);
 			traveler.setMoney(25);
-			travelerCreated = true;
 			testDA.close();
-			
+			assertNotNull(traveler);
+			assertNotNull(ride);
+			assertNotNull(driver);
+
+			testDA.open();
+			Booking bo = testDA.createBooking(ride, traveler, 2);
+			Traveler ondo = testDA.addTravelerWithBooking(travelerUserName, bo);
+			assertNotNull(bo);
+			assertNotNull(ondo);
+			testDA.close();
+
 			testDA.open();
 			boolean a = testDA.bookingComplete(travelerUserName);
 			testDA.close();
@@ -354,23 +364,21 @@ public class BookRideBDWhiteTest {
 			assertNotNull(ride);
 			// invoke System Under Test (sut)
 			sut.open();
-			sut.bookRide(travelerUserName, ride, 2, 0.1);
-			assertTrue(true);
+			boolean b = sut.bookRide(travelerUserName, ride, 2, 0.1);
+			assertEquals(requestedSeats, 2);
+			assertNotNull(ride);
 			sut.close();
+			assertTrue(b);
 			
-			// verify the results
-
+		
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {
 			// Remove the created objects in the database (cascade removing)
 			testDA.open();
-			if (travelerCreated) {
-				testDA.removeTraveler(travelerUserName);
-			}
+			testDA.removeTraveler(travelerUserName);
 			testDA.removeRide(driverUsername, rideFrom, rideTo, rideDate);
 			testDA.removeDriver(driverUsername);
-
 			testDA.close();
 		}
 	}
