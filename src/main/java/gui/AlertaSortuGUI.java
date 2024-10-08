@@ -56,130 +56,126 @@ public class AlertaSortuGUI extends JFrame {
 	}
 
 	public AlertaSortuGUI(String username) {
+	    setBussinessLogic(TravelerGUI.getBusinessLogic());
+	    this.traveler = appFacadeInterface.getTraveler(username);
 
-		setBussinessLogic(TravelerGUI.getBusinessLogic());
+	    setupGUI();
 
-		this.traveler = appFacadeInterface.getTraveler(username);
-		this.getContentPane().setLayout(null);
-		this.setSize(new Dimension(604, 370));
-		this.setTitle(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AddAlert"));
+	    setupListeners(username);
 
-		jLabelOrigin.setBounds(new Rectangle(33, 94, 92, 20));
+	    datesWithEventsCurrentMonth = appFacadeInterface.getThisMonthDatesWithRides("a", "b", jCalendar.getDate());
 
-		jCalendar.setBounds(new Rectangle(300, 50, 225, 150));
-		scrollPaneEvents.setBounds(new Rectangle(25, 44, 346, 116));
-
-		jButtonCreate.setBounds(new Rectangle(100, 263, 130, 30));
-
-		jButtonCreate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				jLabelMsg.setText("");
-				String error = field_Errors();
-				if (error != null)
-					jLabelMsg.setText(error);
-				else {
-					Date selectedDate = jCalendar.getDate();
-					Date currentDate = new Date();
-					if (selectedDate.before(UtilDate.trim(currentDate))
-							|| UtilDate.trim(selectedDate).equals(UtilDate.trim(currentDate))) {
-						jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.InvalidDate"));
-					} else {
-						Alert newAlert = new Alert(fieldOrigin.getText(), fieldDestination.getText(),
-								UtilDate.trim(selectedDate), traveler);
-						boolean success = appFacadeInterface.createAlert(newAlert);
-						if (success) {
-							jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AlertCreated"));
-							traveler.addAlert(newAlert);
-							JFrame a = new AlertakKudeatuGUI(username);
-							a.setVisible(true);
-							jButtonClose_actionPerformed(e);
-						} else {
-							jLabelMsg.setText(
-									ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AlertCreateFail"));
-						}
-					}
-				}
-			}
-		});
-		jButtonClose.setBounds(new Rectangle(275, 263, 130, 30));
-		jButtonClose.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFrame a = new AlertakKudeatuGUI(username);
-				a.setVisible(true);
-				jButtonClose_actionPerformed(e);
-			}
-		});
-
-		jLabelMsg.setBounds(new Rectangle(275, 214, 305, 20));
-		jLabelMsg.setForeground(Color.red);
-
-		jLabelError.setBounds(new Rectangle(10, 232, 320, 20));
-		jLabelError.setForeground(Color.red);
-
-		this.getContentPane().add(jLabelMsg, null);
-		this.getContentPane().add(jLabelError, null);
-
-		this.getContentPane().add(jButtonClose, null);
-		this.getContentPane().add(jButtonCreate, null);
-		this.getContentPane().add(jLabelOrigin, null);
-
-		this.getContentPane().add(jCalendar, null);
-
-		datesWithEventsCurrentMonth = appFacadeInterface.getThisMonthDatesWithRides("a", "b", jCalendar.getDate());
-
-		jLabRideDate.setBounds(new Rectangle(40, 15, 140, 25));
-		jLabRideDate.setBounds(298, 16, 140, 25);
-		getContentPane().add(jLabRideDate);
-
-		jLabelDestination.setBounds(33, 119, 92, 20);
-		getContentPane().add(jLabelDestination);
-
-		fieldOrigin.setBounds(127, 91, 130, 26);
-		getContentPane().add(fieldOrigin);
-		fieldOrigin.setColumns(10);
-
-		fieldDestination.setBounds(127, 119, 130, 26);
-		getContentPane().add(fieldDestination);
-		fieldDestination.setColumns(10);
-
-		this.jCalendar.addPropertyChangeListener(new PropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent propertychangeevent) {
-				if (propertychangeevent.getPropertyName().equals("locale")) {
-					jCalendar.setLocale((Locale) propertychangeevent.getNewValue());
-				} else if (propertychangeevent.getPropertyName().equals("calendar")) {
-					calendarAnt = (Calendar) propertychangeevent.getOldValue();
-					calendarAct = (Calendar) propertychangeevent.getNewValue();
-					@SuppressWarnings("unused")
-					DateFormat dateformat1 = DateFormat.getDateInstance(1, jCalendar.getLocale());
-
-					int monthAnt = calendarAnt.get(Calendar.MONTH);
-					int monthAct = calendarAct.get(Calendar.MONTH);
-					if (monthAct != monthAnt) {
-						if (monthAct == monthAnt + 2) {
-							// Si en JCalendar está 30 de enero y se avanza al mes siguiente, devolverá 2 de
-							// marzo (se toma como equivalente a 30 de febrero)
-							// Con este código se dejará como 1 de febrero en el JCalendar
-							calendarAct.set(Calendar.MONTH, monthAnt + 1);
-							calendarAct.set(Calendar.DAY_OF_MONTH, 1);
-						}
-
-						jCalendar.setCalendar(calendarAct);
-					}
-					jCalendar.setCalendar(calendarAct);
-					int offset = jCalendar.getCalendar().get(Calendar.DAY_OF_WEEK);
-
-					if (Locale.getDefault().equals(new Locale("es")))
-						offset += 4;
-					else
-						offset += 5;
-					@SuppressWarnings("unused")
-					Component o = (Component) jCalendar.getDayChooser().getDayPanel()
-							.getComponent(jCalendar.getCalendar().get(Calendar.DAY_OF_MONTH) + offset);
-				}
-			}
-		});
-
+	    this.jCalendar.addPropertyChangeListener(new PropertyChangeListener() {
+	        public void propertyChange(PropertyChangeEvent propertychangeevent) {
+	            handleCalendarPropertyChange(propertychangeevent);
+	        }
+	    });
 	}
+
+	private void setupGUI() {
+	    this.getContentPane().setLayout(null);
+	    this.setSize(new Dimension(604, 370));
+	    this.setTitle(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AddAlert"));
+
+	    jLabelOrigin.setBounds(new Rectangle(33, 94, 92, 20));
+	    jCalendar.setBounds(new Rectangle(300, 50, 225, 150));
+	    scrollPaneEvents.setBounds(new Rectangle(25, 44, 346, 116));
+
+	    jButtonCreate.setBounds(new Rectangle(100, 263, 130, 30));
+	    jButtonClose.setBounds(new Rectangle(275, 263, 130, 30));
+
+	    jLabelMsg.setBounds(new Rectangle(275, 214, 305, 20));
+	    jLabelMsg.setForeground(Color.red);
+	    jLabelError.setBounds(new Rectangle(10, 232, 320, 20));
+	    jLabelError.setForeground(Color.red);
+
+	    this.getContentPane().add(jLabelMsg);
+	    this.getContentPane().add(jLabelError);
+	    this.getContentPane().add(jButtonClose);
+	    this.getContentPane().add(jButtonCreate);
+	    this.getContentPane().add(jLabelOrigin);
+	    this.getContentPane().add(jCalendar);
+	}
+
+	private void setupListeners(String username) {
+	    jButtonCreate.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            createAlert(username, e);
+	        }
+	    });
+
+	    jButtonClose.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            JFrame a = new AlertakKudeatuGUI(username);
+	            a.setVisible(true);
+	            jButtonClose_actionPerformed(e);
+	        }
+	    });
+	}
+
+	private void createAlert(String username, ActionEvent e) {
+	    jLabelMsg.setText("");
+	    String error = field_Errors();
+	    if (error != null) {
+	        jLabelMsg.setText(error);
+	    } else {
+	        Date selectedDate = jCalendar.getDate();
+	        Date currentDate = new Date();
+	        if (selectedDate.before(UtilDate.trim(currentDate)) || 
+	            UtilDate.trim(selectedDate).equals(UtilDate.trim(currentDate))) {
+	            jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.InvalidDate"));
+	        } else {
+	            Alert newAlert = new Alert(fieldOrigin.getText(), fieldDestination.getText(),
+	                                       UtilDate.trim(selectedDate), traveler);
+	            boolean success = appFacadeInterface.createAlert(newAlert);
+	            handleAlertCreation(success, username, e, newAlert);
+	        }
+	    }
+	}
+
+	private void handleAlertCreation(boolean success, String username, ActionEvent e, Alert newAlert) {
+	    if (success) {
+	        jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AlertCreated"));
+	        traveler.addAlert(newAlert);
+	        JFrame a = new AlertakKudeatuGUI(username);
+	        a.setVisible(true);
+	        jButtonClose_actionPerformed(e);
+	    } else {
+	        jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("AlertGUI.AlertCreateFail"));
+	    }
+	}
+
+	private void handleCalendarPropertyChange(PropertyChangeEvent propertychangeevent) {
+	    if (propertychangeevent.getPropertyName().equals("locale")) {
+	        jCalendar.setLocale((Locale) propertychangeevent.getNewValue());
+	    } else if (propertychangeevent.getPropertyName().equals("calendar")) {
+	        calendarAnt = (Calendar) propertychangeevent.getOldValue();
+	        calendarAct = (Calendar) propertychangeevent.getNewValue();
+	        @SuppressWarnings("unused")
+	        DateFormat dateformat1 = DateFormat.getDateInstance(1, jCalendar.getLocale());
+
+	        int monthAnt = calendarAnt.get(Calendar.MONTH);
+	        int monthAct = calendarAct.get(Calendar.MONTH);
+	        if (monthAct != monthAnt) {
+	            if (monthAct == monthAnt + 2) {
+	                calendarAct.set(Calendar.MONTH, monthAnt + 1);
+	                calendarAct.set(Calendar.DAY_OF_MONTH, 1);
+	            }
+	            jCalendar.setCalendar(calendarAct);
+	        }
+	        jCalendar.setCalendar(calendarAct);
+	        int offset = jCalendar.getCalendar().get(Calendar.DAY_OF_WEEK);
+
+	        if (Locale.getDefault().equals(new Locale("es")))
+	            offset += 4;
+	        else
+	            offset += 5;
+	        @SuppressWarnings("unused")
+	        Component o = (Component) jCalendar.getDayChooser().getDayPanel()
+	                .getComponent(jCalendar.getCalendar().get(Calendar.DAY_OF_MONTH) + offset);
+	    }
+	}
+
 
 	private void jButtonClose_actionPerformed(ActionEvent e) {
 		this.setVisible(false);

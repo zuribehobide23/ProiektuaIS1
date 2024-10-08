@@ -213,11 +213,7 @@ public class DataAccess {
 
 	/**
 	 * This method creates a ride for a driver
-	 * 
-	 * @param from        the origin location of a ride
-	 * @param to          the destination location of a ride
-	 * @param date        the date of the ride
-	 * @param nPlaces     available seats
+	 * @param parameterObject TODO
 	 * @param driverEmail to which ride is added
 	 * 
 	 * @return the created ride, or null, or an exception
@@ -225,26 +221,26 @@ public class DataAccess {
 	 * @throws RideAlreadyExistException         if the same ride already exists for
 	 *                                           the driver
 	 */
-	public Ride createRide(String from, String to, Date date, int nPlaces, float price, String driverName)
+	public Ride createRide(CreateRideParameter parameterObject)
 			throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
 		System.out.println(
-				">> DataAccess: createRide=> from= " + from + " to= " + to + " driver=" + driverName + " date " + date);
-		if (driverName==null) return null;
+				">> DataAccess: createRide=> from= " + parameterObject.from + " to= " + parameterObject.to + " driver=" + parameterObject.driverName + " date " + parameterObject.date);
+		if (parameterObject.driverName==null) return null;
 		try {
-			if (new Date().compareTo(date) > 0) {
+			if (new Date().compareTo(parameterObject.date) > 0) {
 				System.out.println("ppppp");
 				throw new RideMustBeLaterThanTodayException(
 						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
 			}
 
 			db.getTransaction().begin();
-			Driver driver = db.find(Driver.class, driverName);
-			if (driver.doesRideExists(from, to, date)) {
+			Driver driver = db.find(Driver.class, parameterObject.driverName);
+			if (driver.doesRideExists(parameterObject.from, parameterObject.to, parameterObject.date)) {
 				db.getTransaction().commit();
 				throw new RideAlreadyExistException(
 						ResourceBundle.getBundle("Etiquetas").getString("DataAccess.RideAlreadyExist"));
 			}
-			Ride ride = driver.addRide(from, to, date, nPlaces, price);
+			Ride ride = driver.addRide(parameterObject.from, parameterObject.to, parameterObject.date, parameterObject.nPlaces, parameterObject.price);
 			// next instruction can be obviated
 			db.persist(driver);
 			db.getTransaction().commit();
@@ -488,18 +484,7 @@ public class DataAccess {
 			db.getTransaction().begin();
 			User user = getUser(username);
 			if (user != null) {
-				double currentMoney = user.getMoney();
-				if (deposit) {
-					user.setMoney(currentMoney + amount);
-				} else {
-					if ((currentMoney - amount) < 0)
-						user.setMoney(0);
-					else
-						user.setMoney(currentMoney - amount);
-				}
-				db.merge(user);
-				db.getTransaction().commit();
-				return true;
+				return userEzNull(amount, deposit, user);
 			}
 			db.getTransaction().commit();
 			return false;
@@ -508,6 +493,20 @@ public class DataAccess {
 			db.getTransaction().rollback();
 			return false;
 		}
+	}
+	private boolean userEzNull(double amount, boolean deposit, User user) {
+		double currentMoney = user.getMoney();
+		if (deposit) {
+			user.setMoney(currentMoney + amount);
+		} else {
+			if ((currentMoney - amount) < 0)
+				user.setMoney(0);
+			else
+				user.setMoney(currentMoney - amount);
+		}
+		db.merge(user);
+		db.getTransaction().commit();
+		return true;
 	}
 
 	public void addMovement(User user, String eragiketa, double amount) {
