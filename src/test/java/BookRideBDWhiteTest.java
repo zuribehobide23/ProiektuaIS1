@@ -368,9 +368,8 @@ public class BookRideBDWhiteTest {
 			assertEquals(requestedSeats, 2);
 			assertNotNull(ride);
 			sut.close();
-			assertTrue(b);
 			
-		
+			assertTrue(b);
 		} catch (Exception e) {
 			fail(e.getMessage());
 		} finally {

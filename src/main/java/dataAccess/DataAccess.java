@@ -31,6 +31,7 @@ public class DataAccess {
 	ConfigXML c = ConfigXML.getInstance();
 	
 	private String adminPass="admin";
+	private static final String ACCEPTED = "Accepted";
 
 	public DataAccess() {
 		if (c.isDatabaseInitialized()) {
@@ -123,11 +124,11 @@ public class DataAccess {
 			Booking book3 = new Booking(ride2, traveler2, 2);
 			Booking book5 = new Booking(ride5, traveler1, 1);
 
-			book1.setStatus("Accepted");
+			book1.setStatus(ACCEPTED);
 			book2.setStatus("Rejected");
-			book3.setStatus("Accepted");
-			book4.setStatus("Accepted");
-			book5.setStatus("Accepted");
+			book3.setStatus(ACCEPTED);
+			book4.setStatus(ACCEPTED);
+			book5.setStatus(ACCEPTED);
 
 			db.persist(book1);
 			db.persist(book2);
@@ -659,7 +660,7 @@ public class DataAccess {
 			db.getTransaction().begin();
 
 			for (Booking booking : ride.getBookings()) {
-				if (booking.getStatus().equals("Accepted") || booking.getStatus().equals("NotDefined")) {
+				if (booking.getStatus().equals(ACCEPTED) || booking.getStatus().equals("NotDefined")) {
 					double price = booking.prezioaKalkulatu();
 					Traveler traveler = booking.getTraveler();
 					double frozenMoney = traveler.getIzoztatutakoDirua();
@@ -741,12 +742,11 @@ public class DataAccess {
 		return era;
 	}
 
-	public boolean erreklamazioaBidali(String nor, String nori, Date gaur, Booking booking, String textua,
-			boolean aurk) {
+	public boolean erreklamazioaBidali(ErreklamazioaBidaliParameter parameterObject) {
 		try {
 			db.getTransaction().begin();
-
-			Complaint erreklamazioa = new Complaint(nor, nori, gaur, booking, textua, aurk);
+			Complaint erreklamazioa = new Complaint(parameterObject.getNor(), parameterObject.getNori(), parameterObject.getGaur(), 
+			parameterObject.getBooking(), parameterObject.getTextua(), parameterObject.isAurk());
 			db.persist(erreklamazioa);
 			db.getTransaction().commit();
 			return true;
@@ -756,6 +756,7 @@ public class DataAccess {
 			return false;
 		}
 	}
+
 
 	public void updateComplaint(Complaint erreklamazioa) {
 		try {
@@ -860,43 +861,56 @@ public class DataAccess {
 	public void deleteUser(User us) {
 		try {
 			if (us.getMota().equals("Driver")) {
-				List<Ride> rl = getRidesByDriver(us.getUsername());
-				if (rl != null) {
-					for (Ride ri : rl) {
-						cancelRide(ri);
-					}
-				}
-				Driver d = getDriver(us.getUsername());
-				List<Car> cl = d.getCars();
-				if (cl != null) {
-					for (int i = cl.size() - 1; i >= 0; i--) {
-						Car ci = cl.get(i);
-						deleteCar(ci);
-					}
-				}
+				deleteDriver(us);
 			} else {
-				List<Booking> lb = getBookedRides(us.getUsername());
-				if (lb != null) {
-					for (Booking li : lb) {
-						li.setStatus("Rejected");
-						li.getRide().setnPlaces(li.getRide().getnPlaces() + li.getSeats());
-					}
-				}
-				List<Alert> la = getAlertsByUsername(us.getUsername());
-				if (la != null) {
-					for (Alert lx : la) {
-						deleteAlert(lx.getAlertNumber());
-					}
-				}
+				deleteTraveler(us);
 			}
-			db.getTransaction().begin();
-			us = db.merge(us);
-			db.remove(us);
-			db.getTransaction().commit();
+			removeUserDB(us);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+
+	private void removeUserDB(User us) {
+		db.getTransaction().begin();
+		us = db.merge(us);
+		db.remove(us);
+		db.getTransaction().commit();
+	}
+
+	private void deleteTraveler(User us) {
+		List<Booking> lb = getBookedRides(us.getUsername());
+		if (lb != null) {
+			for (Booking li : lb) {
+				li.setStatus("Rejected");
+				li.getRide().setnPlaces(li.getRide().getnPlaces() + li.getSeats());
+			}
+		}
+		List<Alert> la = getAlertsByUsername(us.getUsername());
+		if (la != null) {
+			for (Alert lx : la) {
+				deleteAlert(lx.getAlertNumber());
+			}
+		}
+	}
+
+	private void deleteDriver(User us) {
+		List<Ride> rl = getRidesByDriver(us.getUsername());
+		if (rl != null) {
+			for (Ride ri : rl) {
+				cancelRide(ri);
+			}
+		}
+		Driver d = getDriver(us.getUsername());
+		List<Car> cl = d.getCars();
+		if (cl != null) {
+			for (int i = cl.size() - 1; i >= 0; i--) {
+				Car ci = cl.get(i);
+				deleteCar(ci);
+			}
+		}
+	}
+
 
 	public List<Alert> getAlertsByUsername(String username) {
 		try {
@@ -1003,18 +1017,7 @@ public class DataAccess {
 	public boolean deleteAlert(int alertNumber) {
 		try {
 			db.getTransaction().begin();
-
-			TypedQuery<Alert> query = db.createQuery("SELECT a FROM Alert a WHERE a.alertNumber = :alertNumber",
-					Alert.class);
-			query.setParameter("alertNumber", alertNumber);
-			Alert alert = query.getSingleResult();
-
-			Traveler traveler = alert.getTraveler();
-			traveler.removeAlert(alert);
-			db.merge(traveler);
-
-			db.remove(alert);
-
+			searchAlertAndRemove(alertNumber);
 			db.getTransaction().commit();
 			return true;
 		} catch (Exception e) {
@@ -1022,6 +1025,16 @@ public class DataAccess {
 			db.getTransaction().rollback();
 			return false;
 		}
+	}
+
+	private void searchAlertAndRemove(int alertNumber) {
+		TypedQuery<Alert> query = db.createQuery("SELECT a FROM Alert a WHERE a.alertNumber = :alertNumber", Alert.class);
+		query.setParameter("alertNumber", alertNumber);
+		Alert alert = query.getSingleResult();
+		Traveler traveler = alert.getTraveler();
+		traveler.removeAlert(alert);
+		db.merge(traveler);
+		db.remove(alert);
 	}
 
 	public Complaint getComplaintsByBook(Booking book) {
