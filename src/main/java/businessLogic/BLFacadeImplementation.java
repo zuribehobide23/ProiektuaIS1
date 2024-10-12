@@ -459,4 +459,11 @@ public class BLFacadeImplementation implements BLFacade {
 		return er;
 	}
 
+	@Override
+	public Ride createRide(CreateRideParameter parameterObject)
+			throws RideMustBeLaterThanTodayException, RideAlreadyExistException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

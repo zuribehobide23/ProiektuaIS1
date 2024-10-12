@@ -2,6 +2,7 @@ package dataAccess;
 
 import java.io.File;
 
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,6 +32,10 @@ public class DataAccess {
 	ConfigXML c = ConfigXML.getInstance();
 	
 	private String adminPass="admin";
+	private static final String UN = "username";
+	private static final String RT ="Rejected";
+	private static final String DS = "Donostia";
+	private static final String BF = "BookFreeze";
 	private static final String ACCEPTED = "Accepted";
 
 	public DataAccess() {
@@ -106,11 +111,11 @@ public class DataAccess {
 			cal.set(2024, Calendar.APRIL, 20);
 			Date date4 = UtilDate.trim(cal.getTime());
 
-			driver1.addRide("Donostia", "Madrid", date2, 5, 20); //ride1
-			driver1.addRide("Irun", "Donostia", date2, 5, 2); //ride2
-			driver1.addRide("Madrid", "Donostia", date3, 5, 5); //ride3
+			driver1.addRide(DS, "Madrid", date2, 5, 20); //ride1
+			driver1.addRide("Irun", DS, date2, 5, 2); //ride2
+			driver1.addRide("Madrid", DS, date3, 5, 5); //ride3
 			driver1.addRide("Barcelona", "Madrid", date4, 0, 10); //ride4
-			driver2.addRide("Donostia", "Hondarribi", date1, 5, 3); //ride5
+			driver2.addRide(DS, "Hondarribi", date1, 5, 3); //ride5
 
 			Ride ride1 = driver1.getCreatedRides().get(0);
 			Ride ride2 = driver1.getCreatedRides().get(1);
@@ -125,7 +130,7 @@ public class DataAccess {
 			Booking book5 = new Booking(ride5, traveler1, 1);
 
 			book1.setStatus(ACCEPTED);
-			book2.setStatus("Rejected");
+			book2.setStatus(RT);
 			book3.setStatus(ACCEPTED);
 			book4.setStatus(ACCEPTED);
 			book5.setStatus(ACCEPTED);
@@ -136,11 +141,11 @@ public class DataAccess {
 			db.persist(book4);
 			db.persist(book5);
 
-			Movement m1 = new Movement(traveler1, "BookFreeze", 20);
-			Movement m2 = new Movement(traveler1, "BookFreeze", 40);
-			Movement m3 = new Movement(traveler1, "BookFreeze", 5);
-			Movement m4 = new Movement(traveler2, "BookFreeze", 4);
-			Movement m5 = new Movement(traveler1, "BookFreeze", 3);
+			Movement m1 = new Movement(traveler1, BF, 20);
+			Movement m2 = new Movement(traveler1, BF, 40);
+			Movement m3 = new Movement(traveler1, BF, 5);
+			Movement m4 = new Movement(traveler2, BF, 4);
+			Movement m5 = new Movement(traveler1, BF, 3);
 			Movement m6 = new Movement(driver1, "Deposit", 15);
 			Movement m7 = new Movement(traveler1, "Deposit", 168);
 			
@@ -222,37 +227,50 @@ public class DataAccess {
 	 * @throws RideAlreadyExistException         if the same ride already exists for
 	 *                                           the driver
 	 */
-	public Ride createRide(CreateRideParameter parameterObject)
-			throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
-		System.out.println(
-				">> DataAccess: createRide=> from= " + parameterObject.from + " to= " + parameterObject.to + " driver=" + parameterObject.driverName + " date " + parameterObject.date);
-		if (parameterObject.driverName==null) return null;
-		try {
-			if (new Date().compareTo(parameterObject.date) > 0) {
-				System.out.println("ppppp");
-				throw new RideMustBeLaterThanTodayException(
-						ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
-			}
+	public Ride createRide(CreateRideParameter parameterObject)throws RideAlreadyExistException, RideMustBeLaterThanTodayException {
+	    System.out.println(">> DataAccess: createRide=> from= " + parameterObject.from + " to= " + parameterObject.to + " driver=" + parameterObject.driverName + " date " + parameterObject.date);
+	    if (parameterObject.driverName == null) {
+	        return null;
+	    }
+	    try {
+	        validateRideDate(parameterObject.date);
+	        db.getTransaction().begin();
+	        Driver driver = findDriver(parameterObject.driverName);
+	        validateRideExistence(driver, parameterObject);
+	        Ride ride = createNewRide(driver, parameterObject);
+	        db.getTransaction().commit();
+	        return ride;
+	    } catch (NullPointerException e) {
+	        return null;
+	    }
+	}
 
-			db.getTransaction().begin();
-			Driver driver = db.find(Driver.class, parameterObject.driverName);
-			if (driver.doesRideExists(parameterObject.from, parameterObject.to, parameterObject.date)) {
-				db.getTransaction().commit();
-				throw new RideAlreadyExistException(
-						ResourceBundle.getBundle("Etiquetas").getString("DataAccess.RideAlreadyExist"));
-			}
-			Ride ride = driver.addRide(parameterObject.from, parameterObject.to, parameterObject.date, parameterObject.nPlaces, parameterObject.price);
-			// next instruction can be obviated
-			db.persist(driver);
-			db.getTransaction().commit();
+	private void validateRideDate(Date date) throws RideMustBeLaterThanTodayException {
+	    if (new Date().compareTo(date) > 0) {
+	        System.out.println("ppppp");
+	        throw new RideMustBeLaterThanTodayException(
+	                ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.ErrorRideMustBeLaterThanToday"));
+	    }
+	}
 
-			return ride;
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			return null;
-		}
-		
+	private Driver findDriver(String driverName) {
+	    return db.find(Driver.class, driverName);
+	}
 
+	private void validateRideExistence(Driver driver, CreateRideParameter parameterObject)
+	        throws RideAlreadyExistException {
+	    if (driver.doesRideExists(parameterObject.from, parameterObject.to, parameterObject.date)) {
+	        db.getTransaction().commit();
+	        throw new RideAlreadyExistException(
+	                ResourceBundle.getBundle("Etiquetas").getString("DataAccess.RideAlreadyExist"));
+	    }
+	}
+
+	private Ride createNewRide(Driver driver, CreateRideParameter parameterObject) {
+	    Ride ride = driver.addRide(parameterObject.from, parameterObject.to, parameterObject.date,
+	            parameterObject.nPlaces, parameterObject.price);
+	    db.persist(driver);
+	    return ride;
 	}
 
 	/**
@@ -336,7 +354,7 @@ public class DataAccess {
 
 	public User getUser(String erab) {
 		TypedQuery<User> query = db.createQuery("SELECT u FROM User u WHERE u.username = :username", User.class);
-		query.setParameter("username", erab);
+		query.setParameter(UN, erab);
 		List<User> resultList = query.getResultList();
 		if (resultList.isEmpty()) {
 			return null;
@@ -348,7 +366,7 @@ public class DataAccess {
 	public double getActualMoney(String erab) {
 		TypedQuery<Double> query = db.createQuery("SELECT u.money FROM User u WHERE u.username = :username",
 				Double.class);
-		query.setParameter("username", erab);
+		query.setParameter(UN, erab);
 		Double money = query.getSingleResult();
 		if (money != null) {
 			return money;
@@ -360,13 +378,13 @@ public class DataAccess {
 	public boolean isRegistered(String erab, String passwd) {
 		TypedQuery<Long> travelerQuery = db.createQuery(
 				"SELECT COUNT(t) FROM Traveler t WHERE t.username = :username AND t.passwd = :passwd", Long.class);
-		travelerQuery.setParameter("username", erab);
+		travelerQuery.setParameter(UN, erab);
 		travelerQuery.setParameter("passwd", passwd);
 		Long travelerCount = travelerQuery.getSingleResult();
 
 		TypedQuery<Long> driverQuery = db.createQuery(
 				"SELECT COUNT(d) FROM Driver d WHERE d.username = :username AND d.passwd = :passwd", Long.class);
-		driverQuery.setParameter("username", erab);
+		driverQuery.setParameter(UN, erab);
 		driverQuery.setParameter("passwd", passwd);
 		Long driverCount = driverQuery.getSingleResult();
 
@@ -382,7 +400,7 @@ public class DataAccess {
 
 	public Driver getDriver(String erab) {
 		TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username", Driver.class);
-		query.setParameter("username", erab);
+		query.setParameter(UN, erab);
 		List<Driver> resultList = query.getResultList();
 		if (resultList.isEmpty()) {
 			return null;
@@ -394,7 +412,7 @@ public class DataAccess {
 	public Traveler getTraveler(String erab) {
 		TypedQuery<Traveler> query = db.createQuery("SELECT t FROM Traveler t WHERE t.username = :username",
 				Traveler.class);
-		query.setParameter("username", erab);
+		query.setParameter(UN, erab);
 		List<Traveler> resultList = query.getResultList();
 		if (resultList.isEmpty()) {
 			return null;
@@ -417,18 +435,14 @@ public class DataAccess {
 	public String getMotabyUsername(String erab) {
 		TypedQuery<String> driverQuery = db.createQuery("SELECT d.mota FROM Driver d WHERE d.username = :username",
 				String.class);
-		driverQuery.setParameter("username", erab);
+		driverQuery.setParameter(UN, erab);
 		List<String> driverResultList = driverQuery.getResultList();
 
 		TypedQuery<String> travelerQuery = db.createQuery("SELECT t.mota FROM Traveler t WHERE t.username = :username",
 				String.class);
-		travelerQuery.setParameter("username", erab);
+		travelerQuery.setParameter(UN, erab);
 		List<String> travelerResultList = travelerQuery.getResultList();
 
-		/*TypedQuery<String> adminQuery = db.createQuery("SELECT a.mota FROM Admin a WHERE a.username = :username",
-				String.class);
-		adminQuery.setParameter("username", erab);
-		List<String> adminResultList = adminQuery.getResultList();*/
 
 		if (!driverResultList.isEmpty()) {
 			return driverResultList.get(0);
@@ -614,7 +628,7 @@ public class DataAccess {
 		TypedQuery<Booking> query = db.createQuery(
 				"SELECT b FROM Booking b WHERE b.traveler.username = :username AND b.ride.date <= CURRENT_DATE",
 				Booking.class);
-		query.setParameter("username", username);
+		query.setParameter(UN, username);
 		return query.getResultList();
 	}
 
@@ -630,15 +644,15 @@ public class DataAccess {
 	}
 
 	public List<Booking> getBookingFromDriver(String username) {
+		List<Booking> bookings = new ArrayList<>();
 		try {
 			db.getTransaction().begin();
 			TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username",
 					Driver.class);
-			query.setParameter("username", username);
+			query.setParameter(UN, username);
 			Driver driver = query.getSingleResult();
 
 			List<Ride> rides = driver.getCreatedRides();
-			List<Booking> bookings = new ArrayList<>();
 
 			for (Ride ride : rides) {
 				if (ride.isActive()) {
@@ -651,7 +665,7 @@ public class DataAccess {
 		} catch (Exception e) {
 			e.printStackTrace();
 			db.getTransaction().rollback();
-			return null;
+			return bookings;
 		}
 	}
 
@@ -673,7 +687,7 @@ public class DataAccess {
 					addMovement(traveler, "BookDeny", price);
 					db.getTransaction().begin();
 				}
-				booking.setStatus("Rejected");
+				booking.setStatus(RT);
 				db.merge(booking);
 			}
 			ride.setActive(false);
@@ -693,7 +707,7 @@ public class DataAccess {
 			db.getTransaction().begin();
 			TypedQuery<Driver> query = db.createQuery("SELECT d FROM Driver d WHERE d.username = :username",
 					Driver.class);
-			query.setParameter("username", username);
+			query.setParameter(UN, username);
 			Driver driver = query.getSingleResult();
 
 			List<Ride> rides = driver.getCreatedRides();
@@ -882,7 +896,7 @@ public class DataAccess {
 		List<Booking> lb = getBookedRides(us.getUsername());
 		if (lb != null) {
 			for (Booking li : lb) {
-				li.setStatus("Rejected");
+				li.setStatus(RT);
 				li.getRide().setnPlaces(li.getRide().getnPlaces() + li.getSeats());
 			}
 		}
@@ -918,7 +932,7 @@ public class DataAccess {
 
 			TypedQuery<Alert> query = db.createQuery("SELECT a FROM Alert a WHERE a.traveler.username = :username",
 					Alert.class);
-			query.setParameter("username", username);
+			query.setParameter(UN, username);
 			List<Alert> alerts = query.getResultList();
 
 			db.getTransaction().commit();
@@ -959,47 +973,54 @@ public class DataAccess {
 
 	}
 
+	
+	
 	public boolean updateAlertaAurkituak(String username) {
-		try {
-			db.getTransaction().begin();
+	    try {
+	        db.getTransaction().begin();
 
-			boolean alertFound = false;
-			TypedQuery<Alert> alertQuery = db.createQuery("SELECT a FROM Alert a WHERE a.traveler.username = :username",
-					Alert.class);
-			alertQuery.setParameter("username", username);
-			List<Alert> alerts = alertQuery.getResultList();
+	        boolean alertFound = false;
 
-			TypedQuery<Ride> rideQuery = db
-					.createQuery("SELECT r FROM Ride r WHERE r.date > CURRENT_DATE AND r.active = true", Ride.class);
-			List<Ride> rides = rideQuery.getResultList();
+	        List<Alert> alerts = getAlertsByUsername(username);
+	        List<Ride> rides = getActiveRides();
 
-			for (Alert alert : alerts) {
-				boolean found = false;
-				for (Ride ride : rides) {
-					if (UtilDate.datesAreEqualIgnoringTime(ride.getDate(), alert.getDate())
-							&& ride.getFrom().equals(alert.getFrom()) && ride.getTo().equals(alert.getTo())
-							&& ride.getnPlaces() > 0) {
-						alert.setFound(true);
-						found = true;
-						if (alert.isActive())
-							alertFound = true;
-						break;
-					}
-				}
-				if (!found) {
-					alert.setFound(false);
-				}
-				db.merge(alert);
-			}
+	        for (Alert alert : alerts) {
+	            boolean found = checkIfAlertMatchesRides(alert, rides);
+	            updateAlert(alert);
 
-			db.getTransaction().commit();
-			return alertFound;
-		} catch (Exception e) {
-			e.printStackTrace();
-			db.getTransaction().rollback();
-			return false;
-		}
+	            if (alert.isActive() && found) {
+	                alertFound = true;
+	            }
+	        }
+
+	        db.getTransaction().commit();
+	        return alertFound;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        db.getTransaction().rollback();
+	        return false;
+	    }
 	}
+
+	public List<Ride> getActiveRides() {
+	    TypedQuery<Ride> query = db.createQuery("SELECT r FROM Ride r WHERE r.date > CURRENT_DATE AND r.active = true", Ride.class);
+	    return query.getResultList();
+	}
+	
+	private boolean checkIfAlertMatchesRides(Alert alert, List<Ride> rides) {
+	    for (Ride ride : rides) {
+	        if (UtilDate.datesAreEqualIgnoringTime(ride.getDate(), alert.getDate())
+	                && ride.getFrom().equals(alert.getFrom())
+	                && ride.getTo().equals(alert.getTo())
+	                && ride.getnPlaces() > 0) {
+	            alert.setFound(true);
+	            return true; 
+	        }
+	    }
+	    return false; 
+	}
+
+	
 
 	public boolean createAlert(Alert alert) {
 		try {

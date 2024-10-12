@@ -23,6 +23,8 @@ import exceptions.RideAlreadyExistException;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import dataAccess.CreateRideParameter;
+
 /**
  * Interface that specifies the business logic.
  */
@@ -63,7 +65,7 @@ public interface BLFacade {
 	 *                                           the driver
 	 */
 	@WebMethod
-	public Ride createRide(String from, String to, Date date, int nPlaces, float price, String driverName)
+	public Ride createRide(CreateRideParameter parameterObject)
 			throws RideMustBeLaterThanTodayException, RideAlreadyExistException;
 
 	/**
