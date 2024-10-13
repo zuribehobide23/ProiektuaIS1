@@ -23,7 +23,7 @@ import dataAccess.DataAccess;
 import domain.Driver;
 import domain.Ride;
 
-public class GetRidesByDriverMockWhiteTest {
+public class getRidesByDriverMockWhiteTest {
 
     @Mock
     private DataAccess sut; // Aquí puedes simular el objeto sut (si es necesario)
