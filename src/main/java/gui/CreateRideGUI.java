@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 
 import businessLogic.BLFacade;
 import configuration.UtilDate;
+import dataAccess.CreateRideParameter;
 import domain.Car;
 import domain.Driver;
 import domain.Ride;
@@ -220,11 +221,10 @@ public class CreateRideGUI extends JFrame {
 				BLFacade facade = MainGUI.getBusinessLogic();
 				int inputSeats = (int) comboBoxSeats.getSelectedItem();
 				float price = Float.parseFloat(jTextFieldPrice.getText());
-
+				
 				@SuppressWarnings("unused")
-				Ride r = facade.createRide(fieldOrigin.getText(), fieldDestination.getText(),
-						UtilDate.trim(jCalendar.getDate()), inputSeats, price, driver.getUsername());
-				jLabelMsg.setText(ResourceBundle.getBundle("Etiquetas").getString("CreateRideGUI.RideCreated"));
+				CreateRideParameter para = new CreateRideParameter(fieldOrigin.getText(), fieldDestination.getText(),UtilDate.trim(jCalendar.getDate()), inputSeats, price, driver.getUsername());
+				Ride r = facade.createRide(para);
 
 			} catch (RideMustBeLaterThanTodayException e1) {
 				jLabelMsg.setText(e1.getMessage());
