@@ -222,8 +222,8 @@ public class CreateRideGUI extends JFrame {
 				int inputSeats = (int) comboBoxSeats.getSelectedItem();
 				float price = Float.parseFloat(jTextFieldPrice.getText());
 				
-				@SuppressWarnings("unused")
 				CreateRideParameter para = new CreateRideParameter(fieldOrigin.getText(), fieldDestination.getText(),UtilDate.trim(jCalendar.getDate()), inputSeats, price, driver.getUsername());
+				@SuppressWarnings("unused")
 				Ride r = facade.createRide(para);
 
 			} catch (RideMustBeLaterThanTodayException e1) {
