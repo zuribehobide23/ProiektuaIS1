@@ -51,7 +51,7 @@
 		<sonar.organization>zuribehobide</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.projectKey>zuribehobide_proiektuarides</sonar.projectKey>
-		<sonar.login>0a4ea56aba7d6499779932a620aeb3bf776bb49c</sonar.login>
+		<sonar.login>4fff489ca0f42606bbf268ed483a48f3d114eb34</sonar.login>
 	</properties>
 
 	<!-- https://mvnrepository.com/artifact/junit/junit -->
