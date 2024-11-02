@@ -48,6 +48,9 @@ public interface BLFacade {
 	 */
 	@WebMethod
 	public List<String> getDestinationCities(String from);
+	
+	@WebMethod
+	public ExtendedIterator<String> getDepartingCitiesIterator();
 
 	/**
 	 * This method creates a ride for a driver

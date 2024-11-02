@@ -61,9 +61,13 @@ public class BLFacadeImplementation implements BLFacade {
 		dbManager.close();
 
 		return departLocations;
-
 	}
-
+	
+	@WebMethod
+	public ExtendedIterator<String> getDepartingCitiesIterator(){
+		return new ExtendedIteratorCities(getDepartCities());
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
