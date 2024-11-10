@@ -25,7 +25,8 @@ public class DriverAdapter extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		 Ride da = d.getCreatedRides().get(rowIndex);
+		//a 
+		Ride da = d.getCreatedRides().get(rowIndex);
 		   switch (columnIndex) {
 		    case 0:
 		     return da.getFrom();
